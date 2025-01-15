@@ -10,9 +10,11 @@ import org.springframework.data.jpa.repository.Query;
 
 import com.renan.contact.models.Contact;
 
-public interface ContactRepository extends JpaRepository<Contact, String> {
+public interface ContactRepository extends JpaRepository<Contact, Long> {
 
     List<Contact> findByNameIgnoreCase(String name);
+
+    Optional<Contact> findByName(String name);
 
     Optional<Contact> findByEmail(String email);
 

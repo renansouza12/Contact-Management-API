@@ -15,7 +15,7 @@ import jakarta.validation.Valid;
 
 @Service
 public class ContactService {
-    
+
     private final ContactRepository contactRepository;
 
     @Autowired
@@ -23,36 +23,58 @@ public class ContactService {
         this.contactRepository = contactRepository;
     }
 
-    public List<Contact> getContacts(){
+    public List<Contact> getContacts() {
         return contactRepository.findAll();
-    } 
-    
-    public List<Contact> getContactsByName(String name){
+    }
+
+    public List<Contact> getContactsByName(String name) {
         return contactRepository.findByNameIgnoreCase(name);
     }
 
-    public Optional<Contact> getContactByEmail(String email){
-        return contactRepository.findByEmail(email) ;
+    public List<Contact> getContactByEmail(String email) {
+        return contactRepository.findByNameIgnoreCase(email);
     }
 
-    public List<String> getAllEmails(){
+    public List<String> getAllEmails() {
         return contactRepository.findAllEmails();
     }
 
-    public Optional<Contact> getContactByPhoneNumber(String phoneNumber){
+    public Optional<Contact> getContactByPhoneNumber(String phoneNumber) {
         return contactRepository.findByPhoneNumber(phoneNumber);
     }
-    public List<String> getAllPhoneNumbers(){
+
+    public List<String> getAllPhoneNumbers() {
         return contactRepository.findAllPhoneNumbers();
     }
 
-    public Contact saveContact(@Valid ContactDTO contactDTO){
+    public Contact saveContact(@Valid ContactDTO contactDTO) {
         var contact = new Contact();
         BeanUtils.copyProperties(contactDTO, contact);
         return contactRepository.save(contact);
     }
 
-    public long countContacts(){
+    public Contact updateContactByName(String name, @Valid ContactDTO contactDTO) {
+        Optional<Contact> existingContact = contactRepository.findByName(name);
+        if (existingContact.isPresent()) {
+            BeanUtils.copyProperties(contactDTO, existingContact.get());
+            return contactRepository.save(existingContact.get());
+        } else {
+            throw new RuntimeException("Contact not found with name: " + name);
+        }
+    }
+
+    public Contact updateContactById(Long id, @Valid ContactDTO contactDTO) {
+        Optional<Contact> existingContact = contactRepository.findById(id);
+        if (existingContact.isPresent()) {
+            BeanUtils.copyProperties(contactDTO, existingContact.get());
+            return contactRepository.save(existingContact.get());
+        } else {
+            throw new RuntimeException("Contact not found with id: " + id);
+        }
+    }
+
+
+    public long countContacts() {
         return contactRepository.count();
     }
 }
