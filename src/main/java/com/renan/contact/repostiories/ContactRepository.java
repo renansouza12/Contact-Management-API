@@ -12,7 +12,7 @@ import com.renan.contact.models.Contact;
 
 public interface ContactRepository extends JpaRepository<Contact, Long> {
 
-    List<Contact> findByNameIgnoreCase(String name);
+    Optional<Contact> findByNameIgnoreCase(String name);
 
     Optional<Contact> findByName(String name);
 

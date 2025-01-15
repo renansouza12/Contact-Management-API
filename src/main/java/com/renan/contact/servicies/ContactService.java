@@ -27,12 +27,12 @@ public class ContactService {
         return contactRepository.findAll();
     }
 
-    public List<Contact> getContactsByName(String name) {
+    public Optional<Contact> getContactsByName(String name) {
         return contactRepository.findByNameIgnoreCase(name);
     }
 
-    public List<Contact> getContactByEmail(String email) {
-        return contactRepository.findByNameIgnoreCase(email);
+    public Optional<Contact> getContactByEmail(String email) {
+        return contactRepository.findByEmail(email);
     }
 
     public List<String> getAllEmails() {
