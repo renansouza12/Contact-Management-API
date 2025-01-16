@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.renan.contact.dtos.ContactDTO;
 import com.renan.contact.models.Contact;
@@ -27,7 +28,7 @@ public class ContactService {
         return contactRepository.findAll();
     }
 
-    public Optional<Contact> getContactsByName(String name) {
+    public Optional<Contact> getContactByName(String name) {
         return contactRepository.findByNameIgnoreCase(name);
     }
 
@@ -48,33 +49,40 @@ public class ContactService {
     }
 
     public Contact saveContact(@Valid ContactDTO contactDTO) {
-        var contact = new Contact();
+        Contact contact = new Contact();
         BeanUtils.copyProperties(contactDTO, contact);
         return contactRepository.save(contact);
     }
 
     public Contact updateContactByName(String name, @Valid ContactDTO contactDTO) {
-        Optional<Contact> existingContact = contactRepository.findByName(name);
-        if (existingContact.isPresent()) {
-            BeanUtils.copyProperties(contactDTO, existingContact.get());
-            return contactRepository.save(existingContact.get());
-        } else {
-            throw new RuntimeException("Contact not found with name: " + name);
-        }
+        return contactRepository.findByName(name)
+                .map(existingContact -> {
+                    BeanUtils.copyProperties(contactDTO, existingContact);
+                    return contactRepository.save(existingContact);
+                })
+                .orElseThrow(() -> new RuntimeException("Contact not found with name: " + name));
     }
 
     public Contact updateContactById(Long id, @Valid ContactDTO contactDTO) {
-        Optional<Contact> existingContact = contactRepository.findById(id);
-        if (existingContact.isPresent()) {
-            BeanUtils.copyProperties(contactDTO, existingContact.get());
-            return contactRepository.save(existingContact.get());
-        } else {
-            throw new RuntimeException("Contact not found with id: " + id);
-        }
+        return contactRepository.findById(id)
+                .map(existingContact -> {
+                    BeanUtils.copyProperties(contactDTO, existingContact);
+                    return contactRepository.save(existingContact);
+                })
+                .orElseThrow(() -> new RuntimeException("Contact not found with id: " + id));
     }
-
 
     public long countContacts() {
         return contactRepository.count();
+    }
+
+    @Transactional
+    public void deleteByName(String name) {
+        contactRepository.deleteByName(name);
+    }
+
+    @Transactional
+    public void deleteById(Long id) {
+        contactRepository.deleteById(id);
     }
 }

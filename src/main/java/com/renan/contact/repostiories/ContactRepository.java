@@ -22,6 +22,8 @@ public interface ContactRepository extends JpaRepository<Contact, Long> {
 
     Page<Contact> findAll(Pageable pageable);
 
+    void deleteByName(String name);
+    
     long count();
 
     @Query("SELECT c.email FROM Contact c")
