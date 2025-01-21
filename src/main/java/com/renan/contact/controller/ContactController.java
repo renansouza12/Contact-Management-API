@@ -16,6 +16,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/contacts")
+@CrossOrigin(origins = "http://localhost:4200")
 public class ContactController {
 
     private final ContactService contactService;
