@@ -14,10 +14,16 @@ import com.renan.contact.servicies.ContactService;
 
 import jakarta.validation.Valid;
 
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @RestController
 @RequestMapping("/contacts")
 @CrossOrigin(origins = "http://localhost:4200")
 public class ContactController {
+
+    private static final Logger logger = LoggerFactory.getLogger(ContactController.class);
 
     private final ContactService contactService;
 
@@ -59,6 +65,8 @@ public class ContactController {
 
     @PostMapping
     public ResponseEntity<Contact> saveContact(@Valid @RequestBody ContactDTO contactDTO) {
+        logger.info("Received contact data: {}", contactDTO);
+
         var savedContact = contactService.saveContact(contactDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedContact);
     }
